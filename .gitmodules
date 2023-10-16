@@ -1,0 +1,6 @@
+[submodule "ComfyUI"]
+	path = ComfyUI
+	url = https://github.com/comfyanonymous/ComfyUI.git
+[submodule "Fooocus"]
+	path = Fooocus
+	url = https://github.com/lllyasviel/Fooocus.git

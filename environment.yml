@@ -1,0 +1,13 @@
+name: skypilot
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  # environment management
+  - pip
+  - awscli
+
+  - pip:
+    - skypilot
+

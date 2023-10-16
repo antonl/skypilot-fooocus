@@ -1,0 +1,47 @@
+name: fooocus
+
+resources:
+  # start with a minimal gcp instance
+  cloud: aws
+  accelerators: V100:1
+  use_spot: true
+
+# upload current files to ~/sky_workdir
+workdir: .
+
+setup: |
+  # install micromamba
+  "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+
+  # add micromamba to current session
+  eval "$(~/.local/bin/micromamba shell hook -s posix)"
+
+  # copy setup.cfg
+  cp ~/sky_workdir/comfyui-setup.cfg ~/sky_workdir/ComfyUI/setup.cfg
+  cp ~/sky_workdir/comfyui-setup.py ~/sky_workdir/ComfyUI/setup.py
+
+  # patch launch to avoid creating environments
+  cp -f ~/sky_workdir/fooocus-launch.patched.py ~/sky_workdir/Fooocus/launch.py
+
+  # install requirements for foocus
+  micromamba env create -f ~/sky_workdir/run-environment.yml -n fooocus --yes
+  micromamba activate fooocus
+  pip install --no-deps "torchsde>=0.2.5" opencv-contrib-python
+
+run: |
+  # add micromamba to current session
+  eval "$(./bin/micromamba shell hook -s posix)"
+
+  # set some env vars
+  export PYTHONUNBUFFERED=1 \
+         GRADIO_ALLOW_FLAGGING=never \
+         GRADIO_NUM_PORTS=1 \
+         GRADIO_SERVER_NAME=0.0.0.0
+
+  # load environment
+  micromamba activate fooocus
+
+  # launch fooocus app
+  cd ~/sky_workdir/Fooocus
+  python launch.py
+
